@@ -6,6 +6,7 @@ import json
 
 API_URL = 'https://origin-www.svt.se/oppet-arkiv-api'
 GENRES_URL = 'https://www.oppetarkiv.se/genrer'
+PROGRAMS_URL = 'https://www.oppetarkiv.se/program'
 
 class Item(object):
     """ Implements a program/folder item with name, url and image.
@@ -46,6 +47,50 @@ class GenreParser(HTMLParser.HTMLParser, object):
                 self.data.append(self._item)
                 self._item = None
 
+class ProgramParser(HTMLParser.HTMLParser, object):
+    def __init__(self):
+        self.data = []
+        self._item = None
+        super(ProgramParser, self).__init__()
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        # check if this tag is a new program tag
+        if tag == 'a' and 'class' in attrs.keys() and 'svtoa-anchor-list-link' in attrs['class']:
+            self._item = Item()
+            self._item.url = attrs['href'].split('/')[-2]
+    def handle_data(self, data):
+        # check if there is an open item in construction and if this is its name
+        if self._item and data.strip():
+            self._item.name += data.encode('utf-8')
+    def handle_entityref(self, ref):
+        # entity refs (special characters) need to be handled separately
+        self.handle_data(self.unescape('&'+ref+';'))
+    def handle_endtag(self, tag):
+        # if there is an open item in construction and the genre tag closes, then close the item
+        if tag == 'a':
+            if self._item:
+                self.data.append(self._item)
+                self._item = None
+
+def getProgramImage(program):
+    """ Returns the image url for the requested program.
+    """
+    r = requests.get(API_URL + '/search/titles' + '?titleFacet=%s' % program)
+    jsonData = json.loads(r.text)
+    try:
+        url = jsonData['entries'][0]['thumbnailMedium']
+    except:
+        url = ''
+    return url
+
+def getPrograms():
+    """ Returns a list of Item objects. The url field contains the program's titleFacet as parsed from its web link.
+    """
+    r = requests.get(PROGRAMS_URL)
+    pp = ProgramParser()
+    pp.feed(r.text)
+    return pp.data
+
 def getGenres():
     """ Returns a list of Item objects with empty url fields.
     """
@@ -67,7 +112,6 @@ def getProgramsByGenre(genre):
         item_ = Item()
         item_.name = entry['name'].encode('utf-8')
         item_.url = entry['term']
-        print item_.name, item_.url
         try:
             item_.image = entry['thumbnailMedium']
         except: pass

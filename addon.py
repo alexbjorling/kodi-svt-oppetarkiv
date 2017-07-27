@@ -11,7 +11,10 @@ import resources.lib.svtoa as svtoa
 DEFAULT = {'page': ['root'],
            'genre': [''],
            'program': [''],
+           'letter': [''],
            }
+
+ABC = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ') + ['Å', 'Ä', 'Ö']
 
 # parse arguments from kodi
 base_url = sys.argv[0]
@@ -22,6 +25,7 @@ args.update(newargs)
 
 # constants for page identification
 PAGE_ROOT = 'root'
+PAGE_ABC = 'abc'
 PAGE_PROGRAMS = 'programs'
 PAGE_GENRES = 'genres'
 PAGE_SEARCH = 'search'
@@ -39,7 +43,7 @@ def build_url(query):
 page = args['page'][0]
 if page == PAGE_ROOT:
     # item for the Program interface
-    url = build_url({'page': PAGE_PROGRAMS})
+    url = build_url({'page': PAGE_ABC})
     li = xbmcgui.ListItem('Program A-Ö', iconImage='DefaultFile.png')
     xbmcplugin.addDirectoryItem(handle=addon_handle, url=url,
                                 listitem=li, isFolder=True)
@@ -55,8 +59,32 @@ if page == PAGE_ROOT:
                                 listitem=li, isFolder=True)
     xbmcplugin.endOfDirectory(addon_handle)
 
+elif page == PAGE_ABC:
+    # special case for 0-9
+    url = build_url({'page': 'programs', 'letter': '0'})
+    li = xbmcgui.ListItem('0-9')
+    xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, 
+        listitem=li, isFolder=True)
+    # the rest of the alphabet
+    for letter in ABC:
+        url = build_url({'page': 'programs', 'letter': letter})
+        li = xbmcgui.ListItem(letter)
+        xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, 
+            listitem=li, isFolder=True)
+    xbmcplugin.endOfDirectory(addon_handle)    
+
 elif page == PAGE_PROGRAMS:
-    xbmcgui.Dialog().ok('Not implemented', 'The Öppet arkiv program listing is not yet implemented.')
+    programs = svtoa.getPrograms()
+    letter = args['letter'][0]
+    for item in programs:
+        # comparison which takes care of ÅÄÖ
+        if item.name.upper().startswith(letter.upper()) or (letter == '0' and item.name[0].upper() not in ABC and item.name[:2].upper() not in ABC):
+            url = build_url({'page': 'program', 'program': item.url})
+            image = svtoa.getProgramImage(item.url)
+            li = xbmcgui.ListItem(item.name, iconImage=image)
+            xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, 
+                listitem=li, isFolder=True)
+    xbmcplugin.endOfDirectory(addon_handle)
 
 elif page == PAGE_GENRES:
     genres = svtoa.getGenres()
