@@ -15,14 +15,9 @@ class Item(object):
         self.url = ''
         self.image = ''
     def __unicode__(self):
-        return "*** Item object, complete = %r\n  * name = '%s' \n  * url = '%s' \n  * image = '%s'" % (self.complete, self.name, self.url, self.image)
+        return "*** Item object\n  * name = '%s' \n  * url = '%s' \n  * image = '%s'" % (self.name, self.url, self.image)
     def __str__(self):
         return unicode(self).encode('utf-8')
-    @property
-    def complete(self):
-        if self.name and self.url and self.image:
-            return True
-        return False
 
 class GenreParser(HTMLParser.HTMLParser, object):
     def __init__(self):
