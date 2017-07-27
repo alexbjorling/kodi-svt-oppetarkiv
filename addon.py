@@ -8,7 +8,10 @@ import xbmcplugin
 import resources.lib.svtoa as svtoa
 
 # default parameters
-DEFAULT = {'page': ['root']}
+DEFAULT = {'page': ['root'],
+           'genre': [''],
+           'program': [''],
+           }
 
 # parse arguments from kodi
 base_url = sys.argv[0]
@@ -22,6 +25,8 @@ PAGE_ROOT = 'root'
 PAGE_PROGRAMS = 'programs'
 PAGE_GENRES = 'genres'
 PAGE_SEARCH = 'search'
+PAGE_GENRE = 'genre'
+PAGE_PROGRAM = 'program'
 
 # set content type for the addon
 xbmcplugin.setContent(addon_handle, 'movies')
@@ -51,16 +56,32 @@ if page == PAGE_ROOT:
     xbmcplugin.endOfDirectory(addon_handle)
 
 elif page == PAGE_PROGRAMS:
-    for i in ['program 1', 'program 2', 'program 3']:
-        url = 'http://localhost/some_video.mkv'
-        li = xbmcgui.ListItem(i, iconImage='DefaultVideo.png')
-        xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li)
-    xbmcplugin.endOfDirectory(addon_handle)
+    xbmcgui.Dialog().ok('Not implemented', 'The Öppet arkiv program listing is not yet implemented.')
 
 elif page == PAGE_GENRES:
     genres = svtoa.getGenres()
     for item in genres:
-        url = item.url ## this url should reload the script with a specific genre as argument
+        url = build_url({'page': 'genre', 'genre': urllib.quote(item.name)})
+        li = xbmcgui.ListItem(item.name, iconImage=item.image)
+        xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, 
+            listitem=li, isFolder=True)
+    xbmcplugin.endOfDirectory(addon_handle)
+
+elif page == PAGE_GENRE:
+    genre = args['genre'][0]
+    programs = svtoa.getProgramsByGenre(genre)
+    for item in programs:
+        url = build_url({'page': 'program', 'program': item.url})
+        li = xbmcgui.ListItem(item.name, iconImage=item.image)
+        xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, 
+            listitem=li, isFolder=True)
+    xbmcplugin.endOfDirectory(addon_handle)
+
+elif page == PAGE_PROGRAM:
+    program = args['program'][0]
+    videos = svtoa.getVideosByProgram(program)
+    for item in videos:
+        url = '' # this url should point to playing the actual video
         li = xbmcgui.ListItem(item.name, iconImage=item.image)
         xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li)
     xbmcplugin.endOfDirectory(addon_handle)
