@@ -155,5 +155,13 @@ def getVideosByProgram(program):
             if vid['playerType'] == 'ios':
                 item_.url = vid['url']
         item_.image = entry['thumbnailMedium']
+        # add extra metadata to the info attribute
+        try:
+            season = entry['seasonNumber']
+            episode = entry['episodeNumber']
+            episodes = entry['totalEpisodes']
+            item_.info += 'Säsong %d, avsnitt %d/%d.' % (season, episode, episodes)
+        except:
+            pass
         items.append(item_)
     return items
