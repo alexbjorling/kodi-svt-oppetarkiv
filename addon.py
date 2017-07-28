@@ -109,9 +109,8 @@ elif page == PAGE_PROGRAM:
     program = args['program'][0]
     videos = svtoa.getVideosByProgram(program)
     for item in videos:
-        url = '' # this url should point to playing the actual video
         li = xbmcgui.ListItem(item.name, iconImage=item.image)
-        xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li)
+        xbmcplugin.addDirectoryItem(handle=addon_handle, url=item.url, listitem=li)
     xbmcplugin.endOfDirectory(addon_handle)
 
 elif page == PAGE_SEARCH:

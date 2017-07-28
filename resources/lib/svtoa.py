@@ -130,7 +130,11 @@ def getVideosByProgram(program):
     for entry in jsonData['entries']:
         item_ = Item()
         item_.name = entry['title'].encode('utf-8')
-        item_.url = ''
+        # it seems the ios link works, so find it if it exists
+        item_.url = entry['videoReferences'][0]['url']
+        for vid in entry['videoReferences']:
+            if vid['playerType'] == 'ios':
+                item_.url = vid['url']
         item_.image = entry['thumbnailMedium']
         items.append(item_)
     return items
