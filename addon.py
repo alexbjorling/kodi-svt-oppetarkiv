@@ -24,22 +24,24 @@ args = DEFAULT.copy()
 args.update(newargs)
 
 # constants for page identification
-PAGE_ROOT = 'root'
-PAGE_ABC = 'abc'
-PAGE_PROGRAMS = 'programs'
-PAGE_GENRES = 'genres'
-PAGE_SEARCH = 'search'
-PAGE_GENRE = 'genre'
-PAGE_PROGRAM = 'program'
+PAGE_ROOT = 'root'          # front page
+PAGE_ABC = 'abc'            # page which lists all starting letters
+PAGE_PROGRAMS = 'programs'  # program title page for a given starting letter
+PAGE_GENRES = 'genres'      # page which lists all genres
+PAGE_GENRE = 'genre'        # program title page for a given genre
+PAGE_SEARCH = 'search'      # search page
+PAGE_PROGRAM = 'program'    # page which lists all videos/episodes for a given program
 
 # set content type for the addon
 xbmcplugin.setContent(addon_handle, 'movies')
 
 def build_url(query):
+    """ Helper which builds a url query from a dict.
+    """
     return base_url + '?' + urllib.urlencode(query)
 
-# Following the website, there are three main ways to access 
-# content. This hard-coded switch provides access to these.
+# The following describes the pages of the addon. Each time this script
+# is executed, one of the PAGE_ constants is supplied in the arguments.
 page = args['page'][0]
 if page == PAGE_ROOT:
     # item for the Program interface
