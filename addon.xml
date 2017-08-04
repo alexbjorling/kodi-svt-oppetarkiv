@@ -13,9 +13,9 @@
 		<license>GNU General Public License, v3</license>
 		<language></language>
 		<disclaimer>This is an unofficial addon and it is not supported or maintained by SVT. Some parts of this addon may not be legal in your country of residence - please check with your local laws before installing.</disclaimer>
-		<source>https://bitbucket.org/alexbjorling/kodi-svt-oppetarkiv</source>
-		<forum></forum>
-		<website>https://bitbucket.org/alexbjorling/kodi-svt-oppetarkiv</website>
+		<source>https://github.com/alexbjorling/kodi-svt-oppetarkiv</source>
+		<forum>https://github.com/alexbjorling/kodi-svt-oppetarkiv/issues</forum>
+		<website>https://github.com/alexbjorling/kodi-svt-oppetarkiv</website>
 		<email>alex.bjorling@gmail.com</email>
 		<assets>
 			<icon>icon.png</icon>
