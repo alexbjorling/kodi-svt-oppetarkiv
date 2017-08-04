@@ -1,5 +1,0 @@
-* add video metadata
-* search
-* add user settings: artwork (slow)
-* subtitles/quality etc
-*
